@@ -1,86 +1,81 @@
 #include <bits\stdc++.h>
 using namespace std;
-string USERS_FILE = "data/users_data.txt";
+#define USERS_FILE  "data/users_data.txt"
+#define SEPRATED_VALUES tuple<string, int, int, string, string, int>
+
+SEPRATED_VALUES user_data;
 
 class authentication{
-    authentication(){}
+public:
+    // authentication(){}
     // function to read from the file line by line.
     // function to seprate every line contents.
     // function to check the seprated values with the check function
     // values.
-    pair<string, int> check_user_name_and_password(string user_name, int password)
-    {
-        return make_pair(, );
-    }
-}
-
-int files_fun(){
-     ifstream fin("input_file.txt");
-    if(fin.fail()){
-        cout << "\nInput file can not be opened.\n";
-        return 0;
-    }
-    string A, B, C;
-
-    ofstream fout ("./data/output_file.txt", ios::out | ios::app);
-    if(fout.fail()){
-        cout << "\nOutput file can not be opened.\n";
-        return 0;
-    }
-    while (getline(fin, A))
-    {
-        fout << A << endl;
-    }
-    fout << endl;
-    
-
-
-    fin.close();
-    fout.close();
-
-    return 1;
-}
-void string_stream(){
-    string str = "ali,23,m";
-    istringstream iss(str);
-
-    string name;
-    int age;
-    char gender;
-    iss >> name >> age >> gender;
-    cout << name << " \n" << age << " \n" << gender << endl;
-
-    ostringstream oss;
-    string new_str;
-    oss << name << age << gender << " O\n";
-    new_str = oss.str();
-    cout << new_str << endl;
-}
-void tsetCin(){
-    string user_data = "13,mostafa,111,mostafa_saad_ibrahim,mostafa@gmail.com,-1";
-    // string  splited[] = user_data.split(",");
-    vector<string> seprated_data;
-    istringstream iss(user_data);
+   vector<string> tuble_seprate_this_line(string current_line, int indx){
+    istringstream iss(current_line);
+    string str;
+    vector<string> values;
     while(iss.good()){
-        string subStr;
-        getline(iss, subStr, ',');
-        seprated_data.push_back(subStr);
+        getline(iss, str, ',');
+        values.push_back(str);
     }
-    
-    for(int i = 0; i < seprated_data.size(); i++){
-        cout << "\n" << seprated_data[i];
+    if(values.size() != 6){
+        cout << "\nThere is a problem in data base in line " << indx << endl;
+        exit(1);
     }
+    return values;
 
-}
+   }
+    bool check_this_line(string current_line, int idx, string user_name, int password){
+        vector<string> values =  tuble_seprate_this_line(current_line, idx); //vector_seprate_this_line
+        if(user_name != values[0]){
+            // cout << "\nUser name not corrent, Enter valid user name.\n";
+            return false;
+        }
+        int values_password = stoi(values[1]);
+        if(password != values_password){
+            // cout << "\nPassword not correct for user name " << user_name << ", Enter valid password.\n";
+            return false;
+        }
+        get<0> (user_data) = values[0];
+        get<1> (user_data) = values_password;
+        get<2> (user_data) = stoi(values[2]);
+        get<3> (user_data) = values[3];
+        get<4> (user_data) = values[4];
+        get<5> (user_data) = stoi(values[5]);
+        return true;
+
+    }
+    bool check_user_name_and_password(string user_name, int password)
+    {
+        ifstream fin(USERS_FILE);
+        if(fin.fail()){
+            cout << "\nInput file can not be opened.\n";
+            exit(1);
+        }
+        string current_line;
+        int idx = 0;
+        while(getline(fin, current_line)){
+            // cout << current_line << endl;
+            if(check_this_line(current_line, idx, user_name, password)){
+                cout << "exsist user .\n";
+                return true;
+            }
+            idx++;
+        }
+        fin.close();
+        cout << "invalid user name or password\n";
+        return false;
+        // return current_line;
+
+    }
+};
+
 int main(){
-//     files_fun();
-// string_stream();
-    tsetCin();
-    // int x , y;
-    // cin >> x;
-    // cout << x << endl;
-    // cin >> y ;
-    // cout << y << endl;
+    authentication auth;
+    string current_line;
+   cout << auth.check_user_name_and_password("lail_pro", 132);
    
 return 0;
 }
